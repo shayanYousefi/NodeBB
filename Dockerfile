@@ -7,7 +7,6 @@ ENV NODE_ENV=production \
 RUN mkdir -p /usr/src/app \
     && chown node:node -R /usr/src/app
 
-WORKDIR /usr/src/app/
 
 COPY . /usr/src/app/
 
@@ -23,13 +22,15 @@ RUN cp /usr/src/app/install/package.json /usr/src/app/
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive \
     apt-get -y --no-install-recommends install \
-        tini
+    tini
 
 USER node
 
+WORKDIR /usr/src/app/
+
 RUN npm install --omit=dev
-    # TODO: generate lockfiles for each package manager
-    ## pnpm import \
+# TODO: generate lockfiles for each package manager
+## pnpm import \
 
 FROM node:lts-slim AS final
 
@@ -41,7 +42,6 @@ ENV NODE_ENV=production \
 RUN mkdir -p /usr/src/app \
     && chown node:node -R /usr/src/app
 
-WORKDIR /usr/src/app/
 
 RUN corepack enable
 
@@ -54,6 +54,8 @@ RUN mkdir -p  /opt/config/ \
     && chown node:node -R /opt/config
 
 USER node
+
+WORKDIR /usr/src/app/
 
 RUN mkdir -p /usr/src/app/logs/
 

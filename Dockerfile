@@ -2,10 +2,7 @@ FROM node:lts as build
 
 ENV NODE_ENV=production \
     DAEMON=false \
-    SILENT=false \
-    USER=nodebb \
-    UID=1001 \
-    GID=1001
+    SILENT=false
 
 WORKDIR /usr/src/app/
 
@@ -25,11 +22,7 @@ RUN apt-get update \
     apt-get -y --no-install-recommends install \
         tini
 
-RUN groupadd --gid ${GID} ${USER} \
-    && useradd --uid ${UID} --gid ${GID} --home-dir /usr/src/app/ --shell /bin/bash ${USER} \
-    && chown -R ${USER}:${USER} /usr/src/app/
-
-USER ${USER}
+USER node
 
 RUN npm install --omit=dev
     # TODO: generate lockfiles for each package manager
@@ -39,29 +32,23 @@ FROM node:lts-slim AS final
 
 ENV NODE_ENV=production \
     DAEMON=false \
-    SILENT=false \
-    USER=nodebb \
-    UID=1001 \
-    GID=1001
+    SILENT=false
+
+USER node
 
 WORKDIR /usr/src/app/
 
 RUN corepack enable \
-    && groupadd --gid ${GID} ${USER} \
-    && useradd --uid ${UID} --gid ${GID} --home-dir /usr/src/app/ --shell /bin/bash ${USER} \
-    && mkdir -p /usr/src/app/logs/ /opt/config/ \
-    && chown -R ${USER}:${USER} /usr/src/app/ /opt/config/
+    && mkdir -p /usr/src/app/logs/ /opt/config/
 
-COPY --from=build --chown=${USER}:${USER} /usr/src/app/ /usr/src/app/install/docker/setup.json /usr/src/app/
-COPY --from=build --chown=${USER}:${USER} /usr/bin/tini /usr/src/app/install/docker/entrypoint.sh /usr/local/bin/
+COPY --from=build /usr/src/app/ /usr/src/app/install/docker/setup.json /usr/src/app/
+COPY --from=build /usr/bin/tini /usr/src/app/install/docker/entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh \
     && chmod +x /usr/local/bin/tini
 
 # TODO: Have docker-compose use environment variables to create files like setup.json and config.json.
 # COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/local/bin/gomplate
-
-USER ${USER}
 
 EXPOSE 4567
 

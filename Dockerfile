@@ -4,6 +4,9 @@ ENV NODE_ENV=production \
     DAEMON=false \
     SILENT=false
 
+RUN mkdir -p /usr/src/app \
+    && chwon node:node -R /usr/src/app
+
 WORKDIR /usr/src/app/
 
 COPY . /usr/src/app/
@@ -33,6 +36,10 @@ FROM node:lts-slim AS final
 ENV NODE_ENV=production \
     DAEMON=false \
     SILENT=false
+
+
+RUN mkdir -p /usr/src/app \
+    && chwon node:node -R /usr/src/app
 
 WORKDIR /usr/src/app/
 

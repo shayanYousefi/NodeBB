@@ -50,9 +50,12 @@ COPY --from=build /usr/bin/tini /usr/src/app/install/docker/entrypoint.sh /usr/l
 RUN chmod +x /usr/local/bin/entrypoint.sh \
     && chmod +x /usr/local/bin/tini
 
+RUN mkdir -p  /opt/config/ \
+    && chown node:node -R /opt/config
+
 USER node
 
-RUN mkdir -p /usr/src/app/logs/ /opt/config/
+RUN mkdir -p /usr/src/app/logs/
 
 COPY --from=build /usr/src/app/ /usr/src/app/install/docker/setup.json /usr/src/app/
 

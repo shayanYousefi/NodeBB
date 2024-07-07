@@ -72,4 +72,5 @@ VOLUME ["/usr/src/app/node_modules", "/usr/src/app/build", "/usr/src/app/public/
 # This approach is crucial to circumvent issues with unmanaged subprocesses and signal handling in containerised environments.
 # By integrating tini, we enhance the reliability and stability of our Docker containers.
 # Ensures smooth start-up and shutdown processes, and reliable, safe handling of signal processing.
-ENTRYPOINT ["tini", "--", "entrypoint.sh"]
+ENTRYPOINT []
+CMD ["tini", "--", "entrypoint.sh"]

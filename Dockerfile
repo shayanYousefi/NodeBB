@@ -34,18 +34,21 @@ ENV NODE_ENV=production \
     DAEMON=false \
     SILENT=false
 
-USER node
-
 WORKDIR /usr/src/app/
 
-RUN corepack enable \
-    && mkdir -p /usr/src/app/logs/ /opt/config/
+RUN corepack enable
 
-COPY --from=build /usr/src/app/ /usr/src/app/install/docker/setup.json /usr/src/app/
 COPY --from=build /usr/bin/tini /usr/src/app/install/docker/entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/entrypoint.sh \
     && chmod +x /usr/local/bin/tini
+
+USER node
+
+RUN mkdir -p /usr/src/app/logs/ /opt/config/
+
+COPY --from=build /usr/src/app/ /usr/src/app/install/docker/setup.json /usr/src/app/
+
 
 # TODO: Have docker-compose use environment variables to create files like setup.json and config.json.
 # COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/local/bin/gomplate

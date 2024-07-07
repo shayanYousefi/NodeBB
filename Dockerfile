@@ -5,7 +5,7 @@ ENV NODE_ENV=production \
     SILENT=false
 
 RUN mkdir -p /usr/src/app \
-    && chwon node:node -R /usr/src/app
+    && chown node:node -R /usr/src/app
 
 WORKDIR /usr/src/app/
 
@@ -39,7 +39,7 @@ ENV NODE_ENV=production \
 
 
 RUN mkdir -p /usr/src/app \
-    && chwon node:node -R /usr/src/app
+    && chown node:node -R /usr/src/app
 
 WORKDIR /usr/src/app/
 

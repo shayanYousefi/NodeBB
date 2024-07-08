@@ -27,10 +27,6 @@ USER node
 
 WORKDIR /usr/src/app/
 
-USER node
-
-WORKDIR /usr/src/app/
-
 RUN mkdir -p /usr/src/app/logs/
 
 # TODO: Have docker-compose use environment variables to create files like setup.json and config.json.

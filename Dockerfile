@@ -1,30 +1,29 @@
 FROM node:lts as build
 
 ENV NODE_ENV=production \
-    DAEMON=false \
+    DAEMON=false \ 
     SILENT=false
-
-RUN mkdir -p /usr/src/app \
-    && chown node:node -R /usr/src/app
-
-
-COPY . /usr/src/app/
 
 # Install corepack to allow usage of other package managers
 RUN corepack enable
-
-# Removing unnecessary files for us
-RUN find . -mindepth 1 -maxdepth 1 -name '.*' ! -name '.' ! -name '..' -exec bash -c 'echo "Deleting {}"; rm -rf {}' \;
-
-# Prepage package.json
-RUN cp /usr/src/app/install/package.json /usr/src/app/
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive \
     apt-get -y --no-install-recommends install \
     tini
 
+RUN mkdir -p /usr/src/app \
+    && chown node:node -R /usr/src/app
+
+COPY --chown=node:node . /usr/src/app/
+
+# Removing unnecessary files for us
+RUN find . -mindepth 1 -maxdepth 1 -name '.*' ! -name '.' ! -name '..' -exec bash -c 'echo "Deleting {}"; rm -rf {}' \;
+
 USER node
+
+# Prepage package.json
+RUN cp /usr/src/app/install/package.json /usr/src/app/
 
 WORKDIR /usr/src/app/
 
@@ -39,11 +38,10 @@ ENV NODE_ENV=production \
     SILENT=false
 
 
+RUN corepack enable
+
 RUN mkdir -p /usr/src/app \
     && chown node:node -R /usr/src/app
-
-
-RUN corepack enable
 
 COPY --from=build /usr/bin/tini /usr/src/app/install/docker/entrypoint.sh /usr/local/bin/
 
@@ -57,10 +55,10 @@ USER node
 
 WORKDIR /usr/src/app/
 
-RUN mkdir -p /usr/src/app/logs/
+RUN mkdir -p /usr/src/app/logs/ \
+    && chown node:node -R /usr/src/app/
 
-COPY --from=build /usr/src/app/ /usr/src/app/install/docker/setup.json /usr/src/app/
-
+COPY --chown=node:node --from=build /usr/src/app/ /usr/src/app/install/docker/setup.json /usr/src/app/
 
 # TODO: Have docker-compose use environment variables to create files like setup.json and config.json.
 # COPY --from=hairyhenderson/gomplate:stable /gomplate /usr/local/bin/gomplate
@@ -74,5 +72,4 @@ VOLUME ["/usr/src/app/node_modules", "/usr/src/app/build", "/usr/src/app/public/
 # This approach is crucial to circumvent issues with unmanaged subprocesses and signal handling in containerised environments.
 # By integrating tini, we enhance the reliability and stability of our Docker containers.
 # Ensures smooth start-up and shutdown processes, and reliable, safe handling of signal processing.
-ENTRYPOINT []
-CMD ["tini", "--", "entrypoint.sh"]
+ENTRYPOINT ["tini", "--", "entrypoint.sh"]

@@ -10,7 +10,7 @@ RUN corepack enable
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive \
     apt-get -y --no-install-recommends install \
-    tini git
+    tini
 
 RUN mkdir -p /usr/src/app \
     && chown node:node -R /usr/src/app

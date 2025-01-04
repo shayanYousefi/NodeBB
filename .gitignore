@@ -71,3 +71,4 @@ test.sh
 
 .docker/**
 !**/.gitkeep
+.codegpt

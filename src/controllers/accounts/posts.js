@@ -1,5 +1,7 @@
 'use strict';
 
+const nconf = require('nconf');
+
 const db = require('../../database');
 const user = require('../../user');
 const posts = require('../../posts');
@@ -12,6 +14,8 @@ const plugins = require('../../plugins');
 const utils = require('../../utils');
 
 const postsController = module.exports;
+
+const url = nconf.get('url');
 
 const templateToData = {
 	'account/bookmarks': {
@@ -126,6 +130,14 @@ const templateToData = {
 			return `uid:${userData.uid}:ignored_tids`;
 		},
 	},
+	'account/read': {
+		type: 'topics',
+		noItemsFoundKey: '[[user:has-no-read-topics]]',
+		crumb: '[[user:read]]',
+		getSets: function (callerUid, userData) {
+			return `uid:${userData.uid}:tids_read`;
+		},
+	},
 	'account/topics': {
 		type: 'topics',
 		noItemsFoundKey: '[[user:has-no-topics]]',
@@ -167,6 +179,10 @@ postsController.getWatchedTopics = async function (req, res, next) {
 
 postsController.getIgnoredTopics = async function (req, res, next) {
 	await getPostsFromUserSet('account/ignored', req, res, next);
+};
+
+postsController.getReadTopics = async function (req, res, next) {
+	await getPostsFromUserSet('account/read', req, res, next);
 };
 
 postsController.getTopics = async function (req, res, next) {
@@ -227,6 +243,13 @@ async function getPostsFromUserSet(template, req, res) {
 	payload.sortOptions.forEach((option) => {
 		option.selected = option.url.includes(`sort=${req.query.sort}`);
 	});
+
+	res.locals.linkTags = [
+		{
+			rel: 'canonical',
+			href: `${url}${req.url.replace(/^\/api/, '')}`,
+		},
+	];
 
 	res.render(template, payload);
 }

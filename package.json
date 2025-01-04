@@ -113,7 +113,6 @@
         "nodebb-plugin-question-and-answer": "^1.2.7",
         "nodebb-plugin-spam-be-gone": "2.2.2",
         "nodebb-plugin-sso-alaa": "file:../plugins/nodebb-plugin-sso-alaa",
-        "nodebb-plugin-sso-google": "^3.0.5",
         "nodebb-rewards-essentials": "1.0.0",
         "nodebb-theme-harmony": "1.2.63",
         "nodebb-theme-lavender": "7.1.8",
